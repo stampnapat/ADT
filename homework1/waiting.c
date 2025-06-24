@@ -1,11 +1,10 @@
 #include <stdio.h>
 
 int main() {
-  int x, y, time, day, hour;
+  int x, y, day, hour;
   scanf("%d %d", &x, &y);
   day = (x + y) / 24;
   hour = (x + y) % 24;
-  time = 0;
   printf("%d %d", day ,hour);
   
 
