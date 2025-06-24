@@ -6,6 +6,7 @@ int main() {
   day = (x + y) / 24;
   hour = (x + y) % 24;
   printf("%d %d", day ,hour);
+  return 0;
   
 
 
