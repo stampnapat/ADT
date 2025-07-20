@@ -3,18 +3,14 @@
 int main() {
   int n;
   scanf("%d", &n);
-  int arr[n];
-  int boolean = 1, first_index = 0, last_index = n - 1;
+  int arr[20001] = {0};
+  int boolean = 0;
+
   for (int i = 0; i < n; i++) {
-    scanf("%d", &arr[i]);
-  }
-  while (first_index < last_index) {
-    if (arr[first_index] != arr[last_index]) {
-      boolean = 0;
-      break;
-    }
-    first_index++;
-    last_index--;
+    int temp;
+    scanf("%d", &temp);
+    if (arr[temp + 10000] == 1) boolean = 1;
+    arr[temp + 10000] = 1;
   }
   printf("%d", boolean);
   return 0;
