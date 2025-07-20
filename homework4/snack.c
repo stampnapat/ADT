@@ -1,44 +1,40 @@
 #include <stdio.h>
-
-int find_max(int price[], int m) {
-  int max_p = 0;
-  int index = 0;
-  for (int i = 0; i < m; i++) {
-    if (price[i] > max_p) {
-      index = i;
-      max_p = price[i];
-    }
-  }
-  price[index] = 0;
-  return max_p;
-}
-
+#define MAX 1e7
+#define MIN(a,b) (a) < (b) ? (a) : (b)
 
 int main() {
-  int m, v;
-  scanf("%d", &m);
-  int price[m];
-  int count = 0, piece = 0;
-  for (int i = 0; i < m; i++) {
-    scanf("%d", &price[i]);
-  }
-  scanf("%d", &v);
-  for (int i = 0; i < m-1;i++) {
-    for (int j = i+1; j<m;j++) {
-        if (price[i] < price[j] ) {
-            int temp = price[i];
-            price[i] = price[j];
-            price[j] = temp;
+    int m;
+    scanf("%d", &m);
+    int price[m];
+    for (int i = 0; i < m; i++) {
+        scanf("%d", &price[i]);
+    }
+
+    int v;
+    scanf("%d", &v);
+    int dp[v + 1];
+
+    for (int i = 0; i <= v; i++) {
+        dp[i] = MAX;
+    }
+    dp[0] = 0;
+
+    for (int i = 0; i < m; i++) {
+        int p = price[i];
+        for (int j = p; j <= v; j++) {
+            if (dp[j - p] != MAX) {
+                dp[j] = MIN(dp[j], dp[j - p] + 1);
+            }
         }
     }
-  }
 
-  for (int i = 0; i < m; i++) {
-        while (v >= price[i]) {
-            v -= price[i];
-            count++;
+    for (int i = v; i >= 0; i--) {
+        if (dp[i] != MAX) {
+            printf("%d", dp[i]);
+            break;
         }
-  }
-  printf("%d", piece);
-  return 0;
+    }
+
+    return 0;
 }
+
