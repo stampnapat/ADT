@@ -13,6 +13,7 @@ int find_max(int price[], int m) {
   return max_p;
 }
 
+
 int main() {
   int m, v;
   scanf("%d", &m);
@@ -22,15 +23,22 @@ int main() {
     scanf("%d", &price[i]);
   }
   scanf("%d", &v);
-  while (count++ < m && v > 0) {
-    int value_max = find_max(price, m);
-    if (value_max == 0) break;
-    while (v >= value_max && value_max > 0) {
-      v -= value_max;
-      piece++;
+  for (int i = 0; i < m-1;i++) {
+    for (int j = i+1; j<m;j++) {
+        if (price[i] < price[j] ) {
+            int temp = price[i];
+            price[i] = price[j];
+            price[j] = temp;
+        }
     }
+  }
+
+  for (int i = 0; i < m; i++) {
+        while (v >= price[i]) {
+            v -= price[i];
+            count++;
+        }
   }
   printf("%d", piece);
   return 0;
 }
-
