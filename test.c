@@ -1,7 +1,7 @@
 #include <stdio.h>
-/* A simple C program */
-int main(int argc, char **argv)
-{
-  printf("Hello World\n");
+
+int main() {
+  char str[] = "hellos\0123";
+  printf("%s\n", str);
   return 0;
 }
