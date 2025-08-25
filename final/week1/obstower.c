@@ -1,102 +1,112 @@
 #include <stdio.h>
 #include <stdlib.h>
-// You can define your own (one or more)
-// structures here. However, we eventually
-// need the data type "tree_t".
-// For example:
-// typedef struct node {
-// ...
-// } node_t;
-// typedef node_t tree_t;
-// Write your code here
-//
 
-typedef struct node {
-  int data;
-  struct node *next_sibling;
-  struct node *first_child;
-}node_t;
+#define MAX_NODES 200005
 
+struct node {
+    int to;
+    struct node* next;
+};
 
+struct node* adj[MAX_NODES];
+char present[MAX_NODES];
+int state_[MAX_NODES];
+int stack_node[MAX_NODES * 2];
+int stack_par[MAX_NODES * 2];
+char stack_stage[MAX_NODES * 2];
 
-
-
-
-
-
-
-
-
-
-
-// ...
-int main(void) {
-tree_t *t = NULL;
-int n, i, command;
-int parent, child, node, start, end;
-scanf("%d", &n);
-for (i=0; i<n; i++) {
-scanf("%d", &command);
-switch(command) {
-case 1:
-scanf("%d %d", &parent, &child);
-t = attach(t, parent, child);
-break;
-case 2:
-scanf("%d", &node);
-t = detach(t, node);
-break;
-case 3:
-scanf("%d", &node);
-printf("%d\n", search(t, node));
-break;
-case 4:
-scanf("%d", &node);
-printf("%d\n", degree(t, node));
-break;
-case 5:
-scanf("%d", &node);
-printf("%d\n", is_root(t, node));
-break;
-case 6:
-scanf("%d", &node);
-printf("%d\n", is_leaf(t, node));
-break;
-case 7:
-scanf("%d", &node);
-siblings(t, node);
-break;
-case 8:
-scanf("%d", &node);
-printf("%d\n", depth(t, node));
-break;
-case 9:
-scanf("%d %d", &start, &end);
-print_path(t, start, end);
-break;
-case 10:
-scanf("%d %d", &start, &end);
-printf("%d\n",
-path_length(t, start, end));
-break;
-case 11:
-scanf("%d", &node);
-ancestor(t, node);
-break;
-case 12:
-scanf("%d", &node);
-descendant(t, node);
-break;
-case 13:
-bfs(t);
-break;
-case 14:
-dfs(t);
-break;
-case 15:
-print_tree(t);
-break;
+void add_edge(int u, int v) {
+    struct node* a = (struct node*)malloc(sizeof(struct node));
+    a->to = v; a->next = adj[u]; adj[u] = a;
+    struct node* b = (struct node*)malloc(sizeof(struct node));
+    b->to = u; b->next = adj[v]; adj[v] = b;
 }
+
+int main() {
+    int E;
+    if (scanf("%d", &E) != 1) return 0;
+
+    for (int i = 0; i < MAX_NODES; i++) {
+        adj[i] = NULL;
+        present[i] = 0;
+        state_[i] = -1;
+    }
+
+    int u, v, max_id = 0;
+    for (int i = 0; i < E; i++) {
+        scanf("%d %d", &u, &v);
+        add_edge(u, v);
+        present[u] = present[v] = 1;
+        if (u > max_id) max_id = u;
+        if (v > max_id) max_id = v;
+    }
+
+    int towers = 0;
+
+    for (int root = 0; root <= max_id; root++) {
+        if (!present[root] || state_[root] != -1) continue;
+
+        int top = 0;
+        stack_node[top]   = root;
+        stack_par[top]    = -1;
+        stack_stage[top]  = 0;
+        top++;
+
+        while (top > 0) {
+            top--;
+            int x = stack_node[top];
+            int p = stack_par[top];
+            char stg = stack_stage[top];
+
+            if (stg == 0) {
+                stack_node[top]   = x;
+                stack_par[top]    = p;
+                stack_stage[top]  = 1;
+                top++;
+
+                struct node* it = adj[x];
+                while (it) {
+                    int y = it->to;
+                    if (y != p) {
+                        stack_node[top]   = y;
+                        stack_par[top]    = x;
+                        stack_stage[top]  = 0;
+                        top++;
+                    }
+                    it = it->next;
+                }
+            } else {
+                int child_has_tower = 0;
+                int child_needs_cover = 0;
+
+                struct node* it = adj[x];
+                while (it) {
+                    int y = it->to;
+                    if (y != p) {
+                        if (state_[y] == 1) child_has_tower = 1;
+                        else if (state_[y] == 0) child_needs_cover = 1;
+                    }
+                    it = it->next;
+                }
+
+                if (child_needs_cover) {
+                    state_[x] = 1;
+                    towers++;
+                } else if (child_has_tower) {
+                    state_[x] = 2;
+                } else {
+                    state_[x] = 0;
+                }
+            }
+        }
+
+        if (state_[root] == 0) {
+            towers++;
+            state_[root] = 1;
+        }
+    }
+
+    printf("%d\n", towers);
+    return 0;
 }
-return 0;
-}
+
